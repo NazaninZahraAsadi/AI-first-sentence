@@ -1,0 +1,57 @@
+import subprocess
+import sys
+import os
+
+# === نصب خودکار کتابخونه‌ها ===
+def install_package(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# نصب gtts (اگه نصب نیست)
+try:
+    from gtts import gTTS
+    print("✅ gTTS نصب شده!")
+except ImportError:
+    print("📦 در حال نصب gTTS...")
+    install_package("gtts")
+    from gtts import gTTS
+
+# نصب pygame (اگه نصب نیست)
+try:
+    import pygame
+    print("✅ pygame نصب شده!")
+except ImportError:
+    print("📦 در حال نصب pygame...")
+    install_package("pygame")
+    import pygame
+
+# === تابع پخش صدا ===
+def say_welcome():
+    try:
+        # 1. ساخت فایل صوتی با gTTS
+        print("🎤 در حال تولید صدا...")
+        tts = gTTS(text="I am Azgardious, your slaver in darkness. shadows won't forget  my name.")  # برای فارسی از "ar" استفاده کن
+        tts.save("/storage/emulated/0/welcome.mp3")  # ذخیره در حافظه‌ی گوشی
+        
+        # 2. پخش فایل با pygame
+        print("🔊 در حال پخش صدا...")
+        pygame.mixer.init()
+        pygame.mixer.music.load("/storage/emulated/0/welcome.mp3")
+        pygame.mixer.music.play()
+        
+        # منتظر بمون تا پخش تموم بشه
+        while pygame.mixer.music.get_busy():
+            continue
+        
+        print("✅ پخش تمام شد!")
+        
+        # 3. پاک کردن فایل موقت (اختیاری)
+        os.remove("/storage/emulated/0/welcome.mp3")
+        
+    except Exception as e:
+        print(f"❌ خطا: {e}")
+        print("💡 راهنمایی: مطمئن شو به اینترنت وصل هستی و gTTS درست نصب شده.")
+
+# === تست سریع ===
+print("🚀 تست پخش صدا...")
+say_welcome()
+print("👋 پایان تست)!")
